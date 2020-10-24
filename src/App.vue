@@ -11,7 +11,7 @@
     <a-divider>参数</a-divider>
     <a-row>
       <a-col :span="24" style="text-align: center">
-        <a-select default-value="JSON" style="width: 300px" size="large" @change="handleCodeTypeChange">
+        <a-select default-value="JAVA" style="width: 300px" size="large" @change="handleCodeTypeChange">
           <a-select-option value="JSON"> JSON </a-select-option>
           <a-select-option value="JAVA"> Java Class </a-select-option>
         </a-select>
@@ -29,19 +29,30 @@ type CodeType = "JAVA" | "JSON";
 
 @Component
 export default class App extends Vue {
-  private codeType: CodeType = "JSON";
+  private codeType: CodeType = "JAVA";
   private name: string = "Result";
-  private input: string = `{"name": "wolfx.cn"}`;
+  private input: string = `public class User{
+  private int age;
+  private string name;
+  private string namew;
+  private string names;
+  private double a;
+  private bool ss;
+}`;
 
   get output(): string {
     if (this.codeType === "JAVA") {
-      const ast = this.parseJavaEntity(this.input);
-      const props = ast.result.join("\n");
-      let result = "";
-      result += `export interface ${ast.className} {\n`;
-      result += props;
-      result += "\n}";
-      return result;
+      try {
+        const ast = this.parseJavaEntity(this.input);
+        const props = ast.result.join("\n");
+        let result = "";
+        result += `export interface ${ast.className} {\n`;
+        result += props;
+        result += "\n}";
+        return result;
+      } catch (e) {
+        return e.stack;
+      }
     } else {
       try {
         return typeofJson(this.input, this.name, {
@@ -62,11 +73,12 @@ export default class App extends Vue {
   }
 
   parseJavaEntity(code: string) {
-    const reg = /private (\w+) (\w+);/g;
-    const resList: string[] = code.match(reg);
+    const resList: string[] = code.match(/private[ ]+[\w<>]+[ ]+[\w_0-9]+;/g);
     const result: string[] = [];
     resList.forEach((r) => {
-      const res = reg.exec(r);
+      console.log(r);
+      const res = /private[ ]+([\w<>]+)[ ]+([\w_0-9]+);/.exec(r);
+      console.log("res", res);
       if (res && res.length) {
         result.push(`${res[2]}: ${this.parseJavaType(res[1])}`);
       }
@@ -92,10 +104,18 @@ export default class App extends Vue {
         return "string; // Date";
       case "Integer":
         return "number;";
-      case "BigDecimal":
+      case "int":
         return "number;";
+      case "double":
+        return "number;";
+      case "float":
+        return "number;";
+      case "BigDecimal":
+        return "number; // BigDecimal";
+      case "bool":
+        return "boolean;";
       default:
-        return type + ";";
+        return type.replace("List<", "Array<") + ";";
     }
   }
 }
