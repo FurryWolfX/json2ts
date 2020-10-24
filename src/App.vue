@@ -2,7 +2,7 @@
   <div>
     <a-row>
       <a-col :span="12">
-        <a-textarea v-model="input" placeholder="请输入JSON" :auto-size="{ minRows: 30, maxRows: 30 }" />
+        <a-textarea v-model="input" placeholder="请输入JSON或JavaClass" :auto-size="{ minRows: 30, maxRows: 30 }" />
       </a-col>
       <a-col :span="12">
         <a-textarea :value="output" placeholder="输出的interface" :auto-size="{ minRows: 30, maxRows: 30 }" readonly />
@@ -11,7 +11,7 @@
     <a-divider>参数</a-divider>
     <a-row>
       <a-col :span="24" style="text-align: center">
-        <a-select default-value="JAVA" style="width: 300px" size="large" @change="handleCodeTypeChange">
+        <a-select default-value="JSON" style="width: 300px" size="large" @change="handleCodeTypeChange">
           <a-select-option value="JSON"> JSON </a-select-option>
           <a-select-option value="JAVA"> Java Class </a-select-option>
         </a-select>
@@ -29,29 +29,26 @@ type CodeType = "JAVA" | "JSON";
 
 @Component
 export default class App extends Vue {
-  private codeType: CodeType = "JAVA";
+  private codeType: CodeType = "JSON";
   private name: string = "Result";
-  private input: string = `public class User{
-  private int age;
-  private string name;
-  private string namew;
-  private string names;
-  private double a;
-  private bool ss;
-}`;
+  private input: string = ``;
 
   get output(): string {
     if (this.codeType === "JAVA") {
-      try {
-        const ast = this.parseJavaEntity(this.input);
-        const props = ast.result.join("\n");
-        let result = "";
-        result += `export interface ${ast.className} {\n`;
-        result += props;
-        result += "\n}";
-        return result;
-      } catch (e) {
-        return e.stack;
+      if (this.input) {
+        try {
+          const ast = this.parseJavaEntity(this.input);
+          const props = ast.result.join("\n");
+          let result = "";
+          result += `export interface ${ast.className} {\n`;
+          result += props;
+          result += "\n}";
+          return result;
+        } catch (e) {
+          return e.stack;
+        }
+      } else {
+        return "";
       }
     } else {
       try {
