@@ -1,0 +1,17 @@
+{
+  "include": [],
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "~*": ["./src/*"]
+    }
+  }
+}
