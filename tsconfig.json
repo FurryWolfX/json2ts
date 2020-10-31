@@ -1,5 +1,4 @@
 {
-  "include": [],
   "compilerOptions": {
     "experimentalDecorators": true,
     "target": "esnext",
@@ -11,7 +10,12 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "~*": ["./src/*"]
-    }
-  }
+      "@/*": [
+        "./*"
+      ]
+    },
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

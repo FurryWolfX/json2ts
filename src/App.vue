@@ -59,7 +59,7 @@ export default class App extends Vue {
           addExport: true,
           singleLineJsDocComments: true,
         });
-      } catch (e: Error) {
+      } catch (e: any) {
         return e.stack;
       }
     }
@@ -70,7 +70,7 @@ export default class App extends Vue {
   }
 
   parseJavaEntity(code: string) {
-    const resList: string[] = code.match(/private[ ]+[\w<>]+[ ]+[\w_0-9]+;/g);
+    const resList: string[] = code.match(/private[ ]+[\w<>]+[ ]+[\w_0-9]+;/g) as string[];
     const result: string[] = [];
     resList.forEach((r) => {
       console.log(r);
